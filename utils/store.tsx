@@ -1,12 +1,13 @@
-import { createContext, useReducer } from 'react'
+import { createContext, useContext, useReducer } from 'react'
 import { storeReducer } from './reducers'
+import { Color } from './types'
 
 export interface StoreIF {
-  data: any
+  colors: Color[]
 }
 
 const initialStoreState = {
-  data: null,
+  colors: [],
 }
 
 const AppContext = createContext<{
@@ -26,5 +27,7 @@ const AppProvider: React.FC = ({children}) => {
     </AppContext.Provider>
   )
 }
+
+export const useStore = () => useContext(AppContext)
 
 export { AppContext, AppProvider };

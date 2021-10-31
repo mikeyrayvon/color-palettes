@@ -7,10 +7,19 @@ interface ActionIF {
 
 export const storeReducer = (state: StoreIF, action: ActionIF) => {
   switch(action.type) {
-    case 'set data':
+    case 'add color':
       return {
         ...state,
-        data: action.payload
+        colors: [
+          ...state.colors,
+          action.payload
+        ]
+      }
+    case 'update color':
+      const colors = state.colors.map(c => c.order === action.payload.order ? action.payload : c)
+      return {
+        ...state,
+        colors
       }
     default:
       throw new Error()
