@@ -9,7 +9,14 @@ interface Props {
   paletteLength: number
 }
 
-const ColorPicker: React.FC<Props> = ({ color, updateColor, updateValues, deleteColor, reorderColor, paletteLength }) => {
+const ColorPicker: React.FC<Props> = ({ 
+  color, 
+  updateColor, 
+  updateValues, 
+  deleteColor, 
+  reorderColor, 
+  paletteLength 
+}) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     updateValues(color, e.target.value)
