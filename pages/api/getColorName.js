@@ -1,6 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import fetch from 'node-fetch'
-
 const ENDPOINT = 'https://colornames.org/search/json/?hex='
 
 export default async (
