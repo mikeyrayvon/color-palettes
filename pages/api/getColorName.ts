@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
+import fetch from 'cross-fetch'
 
 const ENDPOINT = 'https://colornames.org/search/json/?hex='
 
