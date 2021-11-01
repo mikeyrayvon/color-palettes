@@ -1,7 +1,6 @@
 import type { NextPage } from 'next'
 import { createClient } from '@supabase/supabase-js'
 
-import { useStore } from '../utils/store'
 import Layout from '../components/Layout'
 import Container from '../components/Container'
 import { Color } from '../utils/types'
@@ -16,12 +15,11 @@ const supabaseKey = process.env.SUPABASE_KEY ?? ''
 const supabase = createClient(supabaseUrl, supabaseKey)
 
 interface Props {
-  palette:[]
+  data:[]
   error: {}
 }
 
 const Landing: NextPage<Props> = ({data, error}) => {
-  //const { state, dispatch } = useStore()
   const [palette, setPalette] = useState<Color[]>([])
   useEffect(() => {
     if (data && data.length > 0) {
