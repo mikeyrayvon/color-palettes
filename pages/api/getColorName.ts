@@ -1,9 +1,8 @@
+import { NextApiRequest, NextApiResponse } from 'next'
+
 const ENDPOINT = 'https://colornames.org/search/json/?hex='
 
-export default async (
-  req, 
-  res
-) => {
+export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const response = await fetch(ENDPOINT + req.body.hex);
     if (response.status === 200) {
