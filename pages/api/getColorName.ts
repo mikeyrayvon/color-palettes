@@ -12,12 +12,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       res.json(data)
     } else { 
       const error = await response.json();
+      console.log('fetch error', error)
       res.statusCode = response.status
       res.json(error)
     }
   } catch (err) {
     res.statusCode = 500
-    console.log(err)
+    console.log('catch error', err)
     res.json(err)
   } 
 }
