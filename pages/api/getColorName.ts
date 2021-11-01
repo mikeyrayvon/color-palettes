@@ -8,8 +8,21 @@ export default async (
   req: NextApiRequest, 
   res: NextApiResponse
 ) => {
-  const response = await fetch(ENDPOINT + req.body.hex);
-  const data: any = await response.json();
-  res.statusCode = 200
-  res.json(data)
+  try {
+    const response = await fetch(ENDPOINT + req.body.hex);
+    if (response.status === 200) {
+      const data: any = await response.json();
+      res.statusCode = 200
+      res.json(data)
+    } else { 
+      const error: any = await response.json();
+      res.statusCode = response.status
+      res.json(error)
+    }
+  } catch (err) {
+    res.statusCode = 500
+    res.json(err)
+  }
+  
+  
 }
