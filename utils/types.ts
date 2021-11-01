@@ -1,7 +1,7 @@
 export interface Color {
   order: number
-  id?: string
-  name?: string
+  id: number
   hex: string
   rgb: string
+  name?: string
 }
