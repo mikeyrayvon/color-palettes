@@ -21,7 +21,7 @@
     "swr": "^1.0.1"
   },
   "devDependencies": {
-    "@netlify/plugin-nextjs": "^3.9.2",
+    "@netlify/plugin-nextjs": "^4.0.0-beta.4",
     "@tailwindcss/forms": "^0.3.4",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.1.2",
@@ -34,7 +34,6 @@
     "eslint-config-next": "12.0.1",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^27.3.1",
-    "netlify-plugin-cache-nextjs": "^1.6.1",
     "postcss": "^8.3.11",
     "react-test-renderer": "^17.0.2",
     "tailwindcss": "^2.2.19",
