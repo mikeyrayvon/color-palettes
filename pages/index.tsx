@@ -66,7 +66,6 @@ const Landing: NextPage<Props> = ({data, error}) => {
           ...color, 
           name: response.name ? response.name : 'New Color'
         }
-        console.log(response)
         setPalette(prevPalette => {
           return prevPalette.map(c => c.order === updatedColor.order ? updatedColor : c)
         })
@@ -148,68 +147,3 @@ export const getServerSideProps = async () => {
 }
 
 export default Landing
-
-
-/*
-const addColor = async () => {
-    const newColor = {
-      ...initialColor,
-      id: uniqueId(),
-      order: state.colors.length + 1
-    }
-
-    dispatch({type: 'add color', payload: newColor})
-    
-    try {
-      const { data, error } = await supabase
-      .from('Palette')
-      .insert([newColor], { upsert: true })
-      if (error) {
-        console.error(error)
-      }
-    } catch(error) {
-      console.error(error)
-    }
-
-    //postData('api/upsertColor', newColor)
-  }
-
-  const updateColor = async (color: Color, hex: string) => {
-    const rgb: number[] | boolean = hexToRGB(hex.slice(1))
-    const updated: Color = {
-      ...color,
-      name: '...',
-      hex,
-      rgb: rgb ? rgb.toString() : ''
-    }
-    dispatch({type: 'update color', payload: updated})
-  }
-
-  const updateName = (color: Color) => {
-    postData('api/getColorName', {
-      hex: color.hex.slice(1)
-    })
-      .then((response) => {
-        return {
-          ...color,
-          name: response.name ? response.name : 'No name',
-        }
-      })
-      .then((updatedColor: Color) => {
-        dispatch({type: 'update color', payload: updatedColor})
-        return updatedColor
-      })
-      .then((updatedColor: Color) => {
-        postData('api/upsertColor', updatedColor)
-      })
-      .catch(err => {
-        console.error('Update Error', err)
-      })
-
-    /*const updated: Color = {
-      ...color,
-      name: colorName.name ? colorName.name : 'No name',
-    }
-    dispatch({type: 'update color', payload: updated})
-  }
-  */
