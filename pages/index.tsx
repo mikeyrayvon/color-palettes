@@ -79,9 +79,7 @@ const Landing: NextPage<Props> = ({data, error}) => {
 
   const deleteColor = (id: number) => {
     const filtered = palette.filter(color => color.id !== id)
-    console.log('filtered',filtered)
     const updated = assignPaletteNewOrder(filtered)
-    console.log('updated',updated)
     setPalette(updated)
     postData('api/deleteColor', { id })
   } 
