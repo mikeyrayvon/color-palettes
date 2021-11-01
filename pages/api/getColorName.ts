@@ -5,8 +5,7 @@ const ENDPOINT = 'https://colornames.org/search/json/?hex='
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const response = await axios(ENDPOINT + req.body.hex);
-    console.log(response)
+    const response = await axios.get(ENDPOINT + req.body.hex);
     if (response.status === 200) {
       res.statusCode = 200
       res.json(response.data)
