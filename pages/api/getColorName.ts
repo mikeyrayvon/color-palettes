@@ -17,8 +17,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
   } catch (err) {
     res.statusCode = 500
+    console.log(err)
     res.json(err)
-  }
-  
-  
+  } 
 }
