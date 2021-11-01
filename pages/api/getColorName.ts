@@ -11,7 +11,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       res.statusCode = 200
       res.json(response.data)
     } else { 
-      console.log('fetch error', error)
+      console.log('fetch error', response.data)
       res.statusCode = response.status
       res.json(response.data)
     }
