@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-const fetch = require('node-fetch')
+
 
 const ENDPOINT = 'https://colornames.org/search/json/?hex='
 
