@@ -9,8 +9,6 @@ export default async (
   req: NextApiRequest, 
   res: NextApiResponse
 ) => {
-  console.log('upsert', req.body)
-
   try{
     const { data, error } = await supabase
     .from('Palette')
@@ -24,7 +22,6 @@ export default async (
       res.json(data)
     }
   } catch (err) {
-    console.error(err)
     res.statusCode = 500
     res.json(err)
   }
