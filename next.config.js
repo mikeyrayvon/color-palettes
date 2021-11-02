@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
-  target: 'server',
-  future: {
-    webpack5: false,
-  },
+  target: 'serverless',
   reactStrictMode: true,
 }
