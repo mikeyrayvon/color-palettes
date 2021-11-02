@@ -1,6 +1,5 @@
 import type { NextPage } from 'next'
 import { createClient } from '@supabase/supabase-js'
-
 import Layout from '../components/Layout'
 import Container from '../components/Container'
 import { Color } from '../utils/types'
