@@ -39,6 +39,7 @@ const Landing: NextPage<Props> = ({data, error}) => {
         newColor
       ]
     })
+    console.log(newColor, palette)
     postData('api/upsertColor', { color: newColor })
   }
 
@@ -55,24 +56,22 @@ const Landing: NextPage<Props> = ({data, error}) => {
     })
   }
 
-  const updateColor = (color: Color) => {
-    postData('api/getColorName', {
+  const updateColor = async (color: Color) => {
+    const response = await postData('api/getColorName', {
       hex: color.hex.slice(1)
     })
-      .then((response) => {
-        const updatedColor = {
-          ...color, 
-          name: response.name ? response.name : 'New Color'
-        }
-        setPalette(prevPalette => {
-          return prevPalette.map(c => c.order === updatedColor.order ? updatedColor : c)
-        })
-        postData('api/upsertColor', { color: updatedColor })
+    if (response && response.hexCode) {
+      const updatedColor = {
+        ...color, 
+        name: response?.name ? response.name : 'New Color'
+      }
+      setPalette(prevPalette => {
+        return prevPalette.map(c => c.order === updatedColor.order ? updatedColor : c)
       })
-      .catch((error) => {
-        console.error('updateColor error', error)
-        alert(error.message)
-      })
+      postData('api/upsertColor', { color: updatedColor })
+    } else {
+      console.error(response)
+    }
   }
 
   const deleteColor = (id: number) => {
@@ -112,15 +111,20 @@ const Landing: NextPage<Props> = ({data, error}) => {
         <div className='py-32'>
           <h1 className='text-3xl font-bold mb-12'>Colors</h1>
           <div className='flex flex-wrap'>
-            {palette.map(color => <ColorPicker 
-              key={color.id}
-              color={color} 
-              updateValues={updateValues} 
-              updateColor={updateColor}
-              deleteColor={deleteColor}
-              reorderColor={reorderColor}
-              paletteLength={palette.length}
-              />)}
+            {palette.length > 0 &&
+              palette.map(color => {
+                console.log(color)
+                return (<ColorPicker 
+                  key={`color_${color.id}`}
+                  color={color} 
+                  updateValues={updateValues} 
+                  updateColor={updateColor}
+                  deleteColor={deleteColor}
+                  reorderColor={reorderColor}
+                  paletteLength={palette.length}
+                  />)
+              })
+            }
             <NewColor addColor={addColor} />
           </div>
         </div>

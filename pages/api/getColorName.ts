@@ -3,21 +3,13 @@ import axios from 'axios'
 
 const ENDPOINT = 'https://colornames.org/search/json/?hex='
 
-export default (req: NextApiRequest, res: NextApiResponse) => {
-  axios.get(ENDPOINT + req.body.hex)
-    .then((response) => {
-      if (response.status === 200) {
-        res.statusCode = 200
-        res.json(response.data)
-      } else { 
-        console.log('fetch error', response.data)
-        res.statusCode = response.status
-        res.json(response.data)
-      }
-    })
-    .catch((err) => {
-      res.statusCode = 500
-      console.log('catch error', err)
-      res.json(err)
-    })
+export default async (req: NextApiRequest, res: NextApiResponse) => {
+  try {
+    const response = await axios.get(ENDPOINT + req.body.hex)
+    res.json(response.data)
+    res.status(200).end()
+  } catch (error) {
+    res.json(error)
+    res.status(405).end()
+  }
 }
