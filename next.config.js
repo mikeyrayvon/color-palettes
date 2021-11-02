@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
   target: 'serverless',
-  reactStrictMode: true
+  webpack5: false,
+  reactStrictMode: true,
 }
