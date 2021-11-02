@@ -6,13 +6,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       method: 'post',
       headers: {'Content-Type': 'application/json'}
     })
-    console.log('response', response)
     const data = await response.json()
-    console.log('data', data)
-    res.json(JSON.stringify(data))
-    res.status(200)
+    res.status(200).json(data)
   } catch (error) {
-    res.json(error)
-    res.status(405)
+    res.status(405).json(error)
   }
 }
