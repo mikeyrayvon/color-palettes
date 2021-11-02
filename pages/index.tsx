@@ -39,7 +39,6 @@ const Landing: NextPage<Props> = ({data, error}) => {
         newColor
       ]
     })
-    console.log(newColor, palette)
     postData('api/upsertColor', { color: newColor })
   }
 
@@ -60,6 +59,7 @@ const Landing: NextPage<Props> = ({data, error}) => {
     const response = await postData('api/getColorName', {
       hex: color.hex.slice(1)
     })
+    console.log(response)
     if (response && response.hexCode) {
       const updatedColor = {
         ...color, 
@@ -113,7 +113,6 @@ const Landing: NextPage<Props> = ({data, error}) => {
           <div className='flex flex-wrap'>
             {palette.length > 0 &&
               palette.map(color => {
-                console.log(color)
                 return (<ColorPicker 
                   key={`color_${color.id}`}
                   color={color} 
