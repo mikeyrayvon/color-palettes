@@ -49,7 +49,7 @@ const ColorPicker: React.FC<Props> = ({
         }
         <button onClick={() => deleteColor(color.id)}>X</button>
       </div>
-      <div className='text-xs flex flex-col'>
+      <div className='text-xs flex flex-col justify-end'>
         {color?.name && 
           <span className='mb-2 font-bold text-gray-800'>{color.name}</span>
         }
