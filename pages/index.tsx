@@ -55,9 +55,10 @@ const Landing: NextPage<Props> = ({data, error}) => {
   }
 
   const updateColor = async (color: Color) => {
-    const response = await postData('api/getName', {
+    const response = await postData('api/testApi', {
       hex: color.hex.slice(1)
     })
+    console.log(response)
     if (response && response.hexCode) {
       const updatedColor = {
         ...color, 
