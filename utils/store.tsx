@@ -37,7 +37,7 @@ const AppContextProvider: React.FC = ({ children }) => {
     palettes: Palette[]
   }) => {
     if (data?.colors) {
-      setColors(data.colors)
+      setColors(sortPaletteByOrder(data.colors))
     }
   }
 
