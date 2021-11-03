@@ -1,23 +1,23 @@
 import { useState } from 'react'
+import { useAppContext } from '../utils/store'
 import type { Color } from '../utils/types'
 
 interface Props {
   color: Color
-  updateValues(color: Color, hex: string): void
-  updateColor(color: Color): void
-  deleteColor(id: number): void
   handleDrag(e: React.DragEvent): void
   handleDrop(e: React.DragEvent): void
 }
 
 const ColorPicker: React.FC<Props> = ({ 
   color, 
-  updateColor, 
-  updateValues, 
-  deleteColor, 
   handleDrag,
   handleDrop
 }) => {
+  const { 
+    updateValues,
+    updateColor,
+    deleteColor 
+  } = useAppContext()
   const [hovered, setHovered] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

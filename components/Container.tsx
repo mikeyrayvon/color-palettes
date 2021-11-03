@@ -1,6 +1,6 @@
 const Container: React.FC = ({ children }) => {
   return (
-    <div className='container mx-auto'>{children}</div>
+    <div className='container mx-auto max-w-3xl'>{children}</div>
   )
 }
 

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { createClient } from '@supabase/supabase-js'
-import { supabaseUrl } from '../../utils/constants'
 
+const supabaseUrl = process.env.SUPABASE_URL ?? ''
 const supabaseKey = process.env.SUPABASE_KEY ?? ''
 const supabase = createClient(supabaseUrl, supabaseKey)
 

@@ -2,118 +2,46 @@ import type { NextPage } from 'next'
 import { createClient } from '@supabase/supabase-js'
 import Layout from '../components/Layout'
 import Container from '../components/Container'
-import { Color } from '../utils/types'
+import { Color, Palette } from '../utils/types'
 import ColorPicker from '../components/ColorPicker'
 import NewColor from '../components/NewColor'
-import { initialColor, supabaseUrl } from '../utils/constants'
+import { initialColor } from '../utils/constants'
 import { assignPaletteNewOrder, hexToRGB, sortPaletteByOrder, uniqueId } from '../utils/tools'
 import { postData } from '../utils/api'
 import React, { useEffect, useState } from 'react'
-
-const supabaseKey = process.env.SUPABASE_KEY ?? ''
-const supabase = createClient(supabaseUrl, supabaseKey)
+import { useAppContext } from '../utils/store'
 
 interface Props {
-  data:[]
+  data: {}
   error: {}
 }
-
-const Landing: NextPage<Props> = ({data, error}) => {
+const Landing: NextPage<Props> = ({ data, error }) => {
+  const { 
+    palettes, 
+    colors, 
+    setInitialData,
+    handleDroppedColor 
+  } = useAppContext()
   const [dragId, setDragId] = useState<null | number>(null)
-  const [palette, setPalette] = useState<Color[]>([])
 
   useEffect(() => {
-    if (data && data.length > 0) {
-      setPalette(sortPaletteByOrder(data))
+    if (data) {
+      setInitialData(data)
     }
   }, [])
-
-  const addColor = () => {
-    const newColor = {
-      ...initialColor,
-      id: uniqueId(),
-      order: palette.length + 1
-    }
-    setPalette((prevPalette) => {
-      return [
-        ...prevPalette,
-        newColor
-      ]
-    })
-    postData('/api/upsertColor', { color: newColor })
-  }
-
-  const updateValues = (color: Color, hex: string) => {
-    const rgb: number[] | boolean = hexToRGB(hex.slice(1))
-    const updatedColor: Color = {
-      ...color,
-      name: '...',
-      hex,
-      rgb: rgb ? rgb.toString() : ''
-    }    
-    setPalette(prevPalette => {
-      return prevPalette.map(c => c.order === updatedColor.order ? updatedColor : c)
-    })
-  }
-
-  const updateColor = async (color: Color) => {
-    const response = await postData('/api/getName', {
-      hex: color.hex.slice(1)
-    })
-    if (response?.colors) {
-      const updatedColor = {
-        ...color, 
-        name: response.colors[0].name
-      }
-      setPalette(prevPalette => {
-        return prevPalette.map(c => c.order === updatedColor.order ? updatedColor : c)
-      })
-      postData('/api/upsertColor', { color: updatedColor })
-    } else {
-      console.error(response)
-    }
-  }
-
-  const deleteColor = (id: number) => {
-    const filtered = palette.filter(color => color.id !== id)
-    const updated = assignPaletteNewOrder(filtered)
-    setPalette(updated)
-    postData('/api/deleteColor', { id })
-  } 
 
   const handleDrag = (e: React.DragEvent) => {
     setDragId(parseInt(e.currentTarget.id))
   };
 
   const handleDrop = (e: React.DragEvent) => {
-    const dragColor: Color | undefined = palette.find(color => color.id === dragId)
-    const dropColor: Color | undefined = palette.find(color=> color.id === parseInt(e.currentTarget.id));
+    const dragColor: Color | undefined = colors.find(c => c.id === dragId)
+    const dropColor: Color | undefined = colors.find(c => c.id === parseInt(e.currentTarget.id))
 
     if (dragColor && dropColor) {
-      const reordered = palette.map((c): Color => {
-        if (c.id === dragId) {
-          const updatedColor = {
-            ...c, 
-            order: dropColor.order
-          }
-          postData('/api/upsertColor', { color: updatedColor })
-          return updatedColor
-        }
-        if (c.id === parseInt(e.currentTarget.id)) {
-          const updatedColor = {
-            ...c, 
-            order: dragColor.order
-          }
-          postData('/api/upsertColor', { color: updatedColor })
-          return updatedColor
-        }
-        return c
-      })
-      const sorted = sortPaletteByOrder(reordered)
-      const updated = assignPaletteNewOrder(sorted)
-      setPalette(updated)
+      handleDroppedColor(dragColor, dropColor)
     }
-  };
+  }
 
   return (
     <Layout>
@@ -121,20 +49,17 @@ const Landing: NextPage<Props> = ({data, error}) => {
         <div className='py-20'>
           <h1 className='text-3xl font-bold mb-12'>Colors</h1>
           <div className='flex flex-wrap'>
-            {palette.length > 0 &&
-              palette.map(color => {
+            {colors.length > 0 &&
+              colors.map(c => {
                 return (<ColorPicker 
-                  key={`color_${color.id}`}
-                  color={color} 
-                  updateValues={updateValues} 
-                  updateColor={updateColor}
-                  deleteColor={deleteColor}
+                  key={`color_${c.id}`}
+                  color={c} 
                   handleDrag={handleDrag}
                   handleDrop={handleDrop}
                   />)
               })
             }
-            <NewColor addColor={addColor} />
+            <NewColor />
           </div>
         </div>
       </Container>
@@ -143,15 +68,19 @@ const Landing: NextPage<Props> = ({data, error}) => {
 }
 
 export const getServerSideProps = async () => {
+  const supabaseUrl = process.env.SUPABASE_URL ?? ''
+  const supabaseKey = process.env.SUPABASE_KEY ?? ''
+  const supabase = createClient(supabaseUrl, supabaseKey)
+
   let { data: Palette, error } = await supabase
   .from('Palette')
   .select('*')
 
-
-
   return {
     props: {
-      data: Palette,
+      data: {
+        colors: Palette
+      },
       error
     }
   }
