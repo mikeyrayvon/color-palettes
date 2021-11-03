@@ -14,6 +14,9 @@ interface AppContextValue {
   updateColor(color: Color): void
   deleteColor(colorId: number, paletteId: number): void
   handleDroppedColor(dragColor: Color, dropColor: Color): void | null
+  updateTitle(e: React.ChangeEvent<HTMLInputElement>, paletteId: number): void
+  updatePalette(palette: Palette): void
+  deletePalette(paletteId: number, colorIds: number[]): void
 }
 
 const AppContext = createContext<AppContextValue>({
@@ -25,7 +28,10 @@ const AppContext = createContext<AppContextValue>({
   updateValues: () => {},
   updateColor: () => {},
   deleteColor: () => {},
-  handleDroppedColor: () => {}
+  handleDroppedColor: () => {},
+  updateTitle: () => {},
+  updatePalette: () => {}, 
+  deletePalette: () => {}
 })
 
 const AppContextProvider: React.FC = ({ children }) => {
@@ -176,6 +182,35 @@ const AppContextProvider: React.FC = ({ children }) => {
     }
   }
 
+  const updateTitle = (e: React.ChangeEvent<HTMLInputElement>, paletteId: number) => {
+    const newTitle = e.currentTarget.value
+    const updatedPalettes = palettes.map(p => {
+      if (p.id === paletteId) {
+        return {
+          ...p,
+          title: newTitle
+        }
+      }
+      return p
+    })
+    setPalettes(updatedPalettes)
+  }
+
+  const updatePalette = (palette: Palette) => {
+    postData('/api/upsertPalette', { palette })
+  }
+
+  const deletePalette = (paletteId: number, colorIds: number[]) => {
+    const filteredPalettes = palettes.filter(p => p.id !== paletteId)
+    const filteredColors = colors.filter(c => !colorIds.includes(c.id));
+    setPalettes(filteredPalettes)
+    setColors(filteredColors)
+    for (const id of colorIds) {
+      postData('/api/deleteColor', { id })
+    }
+    postData('/api/deletePalette', { id: paletteId })
+  }
+ 
   return (
     <AppContext.Provider
       value={{
@@ -187,7 +222,10 @@ const AppContextProvider: React.FC = ({ children }) => {
         updateValues,
         updateColor,
         deleteColor,
-        handleDroppedColor
+        handleDroppedColor,
+        updateTitle,
+        updatePalette,
+        deletePalette
       }}
     >
       {children}

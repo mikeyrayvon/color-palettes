@@ -36,13 +36,13 @@ const Landing: NextPage<Props> = ({ data, error }) => {
           <h1 className='text-3xl font-bold mb-12'>Colors</h1>
           <div>
             {palettes && palettes.length > 0 &&
-              palettes.sort((a, b) => {
+              palettes.sort((a: Palette, b: Palette) => {
                 if (a && b && a.created_at && b.created_at) {
                   return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
                 }
                 return 0
               })
-                .map(p => {
+                .map((p: Palette) => {
                   return (
                     <ColorPalette key={p.id} palette={p} />
                   )

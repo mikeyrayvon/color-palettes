@@ -9,9 +9,14 @@ interface Props {
 }
 
 const ColorPalette: React.FC<Props> = ({ palette }) => {
+  const [hovered, setHovered] = useState(false)
+
   const { 
     colors, 
-    handleDroppedColor 
+    handleDroppedColor,
+    updateTitle,
+    updatePalette,
+    deletePalette
   } = useAppContext()
 
   const [dragId, setDragId] = useState<null | number>(null)
@@ -57,11 +62,31 @@ const ColorPalette: React.FC<Props> = ({ palette }) => {
   } 
   
   return (
-    <div className='flex flex-wrap'>
-      <h2>{palette.title}</h2>
-      <p>{palette.description}</p>
-      {renderColors()}
-      <NewColor paletteId={palette.id} />
+    <div 
+      className='mb-8'
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      >
+      <div className='flex justify-between items-center'>
+        <input 
+          className='border-0 text-xl font-bold' 
+          value={palette.title} 
+          type='text' 
+          onChange={e => updateTitle(e, palette.id)}
+          onBlur={() => updatePalette(palette)}
+          />
+        {hovered && 
+          <button 
+            className='py-1 px-2 rounded-lg bg-gray-500 hover:bg-gray-600 text-white' 
+            onClick={() => deletePalette(palette.id, palette.colors)}
+            >Remove</button>
+        }
+      </div>
+      <div className='flex flex-wrap'>
+        <p>{palette.description}</p>
+        {renderColors()}
+        <NewColor paletteId={palette.id} />
+      </div>
     </div>
   )
 }
