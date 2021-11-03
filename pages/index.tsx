@@ -118,7 +118,7 @@ const Landing: NextPage<Props> = ({data, error}) => {
   return (
     <Layout>
       <Container>
-        <div className='py-32'>
+        <div className='py-20'>
           <h1 className='text-3xl font-bold mb-12'>Colors</h1>
           <div className='flex flex-wrap'>
             {palette.length > 0 &&
@@ -146,6 +146,8 @@ export const getServerSideProps = async () => {
   let { data: Palette, error } = await supabase
   .from('Palette')
   .select('*')
+
+
 
   return {
     props: {

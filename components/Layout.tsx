@@ -3,9 +3,9 @@ import Footer from './Footer'
 
 const Layout: React.FC = ({ children }) => {
   return (
-    <div className='overflow-x-hidden' data-testid='layout'>
+    <div className='overflow-x-hidden flex flex-col min-h-screen' data-testid='layout'>
       <Header />
-      <main>{children}</main>
+      <main className='flex-grow'>{children}</main>
       <Footer />
     </div>
   )
