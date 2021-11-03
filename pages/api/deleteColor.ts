@@ -8,7 +8,7 @@ const supabase = createClient(supabaseUrl, supabaseKey)
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try{
     const { data, error } = await supabase
-    .from('Palette')
+    .from('Colors')
     .delete()
     .match({ id: req.body.id })
 

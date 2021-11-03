@@ -7,7 +7,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const response = await axios('https://api.color.pizza/v1/' + hex)
     res.status(200).json(response.data)
   } catch (error) {
-    console.log(error)
     res.json(error)
   }
 }

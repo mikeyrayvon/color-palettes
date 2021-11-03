@@ -1,19 +1,18 @@
-import { createClient } from '@supabase/supabase-js';
-import { createContext, useContext, useEffect, useState } from 'react'
-import { postData } from './api';
-import { initialColor } from './constants';
-import { assignPaletteNewOrder, hexToRGB, sortPaletteByOrder, uniqueId } from './tools';
+import { createContext, useContext, useState } from 'react'
+import { postData } from './api'
+import { initialColor, initialPalette } from './constants'
+import { assignPaletteNewOrder, hexToRGB, sortPaletteByOrder, uniqueId } from './tools'
 import { Color, Palette } from './types'
-
 
 interface AppContextValue {
   palettes: Palette[] | []
   colors: Color[] | []
   setInitialData(data: {}): void
-  addColor(): void
+  addColor(paletteId: number): void
+  addPalette(): void
   updateValues(color: Color, hex: string): void
   updateColor(color: Color): void
-  deleteColor(id: number): void
+  deleteColor(colorId: number, paletteId: number): void
   handleDroppedColor(dragColor: Color, dropColor: Color): void | null
 }
 
@@ -22,10 +21,11 @@ const AppContext = createContext<AppContextValue>({
   colors: [],
   setInitialData: () => {},
   addColor: () => {},
+  addPalette: () => {},
   updateValues: () => {},
   updateColor: () => {},
   deleteColor: () => {},
-  handleDroppedColor: () => {},
+  handleDroppedColor: () => {}
 })
 
 const AppContextProvider: React.FC = ({ children }) => {
@@ -36,24 +36,64 @@ const AppContextProvider: React.FC = ({ children }) => {
     colors: Color[],
     palettes: Palette[]
   }) => {
-    if (data?.colors) {
-      setColors(sortPaletteByOrder(data.colors))
-    }
+    setColors(data.colors)
+    setPalettes(data.palettes)
   }
 
-  const addColor = () => {
-    const newColor = {
+  const addColor = (paletteId: number) => {
+    const palette = palettes.find(p => {
+      return p.id === paletteId
+    })
+    const colorId = uniqueId()
+    const color = {
       ...initialColor,
-      id: uniqueId(),
-      order: colors.length + 1
+      id: colorId,
+      order: palette?.colors ? palette?.colors.length + 1 : 1
     }
+    const updatedPalettes = palettes.map(p => {
+      if (p.id === paletteId) {
+        return {
+          ...p, 
+          colors: [
+            ...p.colors,
+            colorId
+          ]
+        }
+      }
+      return p
+    })
+
     setColors((prevColors) => {
       return [
         ...prevColors,
-        newColor
+        color
       ]
     })
-    postData('/api/upsertColor', { color: newColor })
+    setPalettes(updatedPalettes)
+
+    postData('/api/upsertPalette', { palette: {
+      ...palette,
+      colors: [
+        ...palette?.colors || [],
+        colorId
+      ]
+    } })
+    postData('/api/upsertColor', { color })
+  }
+
+  const addPalette = () => {
+    const palette = {
+      ...initialPalette,
+      id: uniqueId(),
+      colors: []
+    }
+    setPalettes((prevPalettes) => {
+      return [
+        ...prevPalettes,
+        palette
+      ]
+    })
+    postData('/api/upsertPalette', { palette })
   }
 
   const updateValues = (color: Color, hex: string) => {
@@ -65,7 +105,7 @@ const AppContextProvider: React.FC = ({ children }) => {
       rgb: rgb ? rgb.toString() : ''
     }    
     setColors(prevColors => {
-      return prevColors.map(c => c.order === updatedColor.order ? updatedColor : c)
+      return prevColors.map(c => c.id === color.id ? updatedColor : c)
     })
   }
 
@@ -79,7 +119,7 @@ const AppContextProvider: React.FC = ({ children }) => {
         name: response.colors[0].name
       }
       setColors(prevColors => {
-        return prevColors.map(c => c.order === updatedColor.order ? updatedColor : c)
+        return prevColors.map(c => c.id === color.id ? updatedColor : c)
       })
       postData('/api/upsertColor', { color: updatedColor })
     } else {
@@ -87,11 +127,26 @@ const AppContextProvider: React.FC = ({ children }) => {
     }
   }
 
-  const deleteColor = (id: number) => {
-    const filtered = colors.filter(c => c.id !== id)
-    const updated = assignPaletteNewOrder(filtered)
-    setColors(updated)
-    postData('/api/deleteColor', { id })
+  const deleteColor = (colorId: number, paletteId: number) => {
+    const updatedColors = colors.filter(c => c.id !== colorId)
+    const palette = palettes.find(p => p.id === paletteId)
+    const filteredColors = palette?.colors.filter(id => id !== colorId)
+    const updatedPalettes = palettes.map(p => {
+      if (p.id === paletteId && filteredColors) {
+        return {
+          ...p,
+          colors: filteredColors
+        }
+      }
+      return p
+    })
+    setColors(updatedColors)
+    setPalettes(updatedPalettes)
+    postData('/api/deleteColor', { id: colorId })
+    postData('/api/upsertPalette', { palette: {
+      ...palette,
+      colors: filteredColors
+    } })
   } 
 
   const handleDroppedColor = (dragColor: Color, dropColor: Color) => {
@@ -128,6 +183,7 @@ const AppContextProvider: React.FC = ({ children }) => {
         colors,
         setInitialData,
         addColor,
+        addPalette,
         updateValues,
         updateColor,
         deleteColor,

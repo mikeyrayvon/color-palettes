@@ -8,8 +8,9 @@ const supabase = createClient(supabaseUrl, supabaseKey)
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try{
     const { data, error } = await supabase
-    .from('Colors')
-    .insert([req.body.color], { upsert: true })
+    .from('Palettes')
+    .delete()
+    .match({ id: req.body.id })
 
     if (error) {
       res.statusCode = 500
@@ -19,6 +20,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       res.json(data)
     }
   } catch (err) {
+    console.error(err)
     res.statusCode = 500
     res.json(err)
   }

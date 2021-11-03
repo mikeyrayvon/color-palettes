@@ -3,12 +3,14 @@ import { useAppContext } from '../utils/store'
 import type { Color } from '../utils/types'
 
 interface Props {
+  paletteId: number
   color: Color
   handleDrag(e: React.DragEvent): void
   handleDrop(e: React.DragEvent): void
 }
 
 const ColorPicker: React.FC<Props> = ({ 
+  paletteId,
   color, 
   handleDrag,
   handleDrop
@@ -54,7 +56,7 @@ const ColorPicker: React.FC<Props> = ({
         />
       {hovered &&
         <div className='absolute top-0 right-0 flex'>
-          <button onClick={() => deleteColor(color.id)}>✕</button>
+          <button onClick={() => deleteColor(color.id, paletteId)}>✕</button>
         </div>
       }
       <div className='text-xs flex flex-col justify-between flex-grow'>

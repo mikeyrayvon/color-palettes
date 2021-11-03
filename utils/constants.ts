@@ -5,3 +5,8 @@ export const initialColor = {
   hex: '#000000',
   rgb: '0,0,0'
 }
+
+export const initialPalette = {
+  title: 'Colors',
+  description: ''
+}

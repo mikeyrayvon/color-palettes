@@ -10,6 +10,8 @@ import { assignPaletteNewOrder, hexToRGB, sortPaletteByOrder, uniqueId } from '.
 import { postData } from '../utils/api'
 import React, { useEffect, useState } from 'react'
 import { useAppContext } from '../utils/store'
+import ColorPalette from '../components/ColorPalette'
+import NewPalette from '../components/NewPalette'
 
 interface Props {
   data: {}
@@ -18,11 +20,8 @@ interface Props {
 const Landing: NextPage<Props> = ({ data, error }) => {
   const { 
     palettes, 
-    colors, 
-    setInitialData,
-    handleDroppedColor 
+    setInitialData
   } = useAppContext()
-  const [dragId, setDragId] = useState<null | number>(null)
 
   useEffect(() => {
     if (data) {
@@ -30,36 +29,26 @@ const Landing: NextPage<Props> = ({ data, error }) => {
     }
   }, [])
 
-  const handleDrag = (e: React.DragEvent) => {
-    setDragId(parseInt(e.currentTarget.id))
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    const dragColor: Color | undefined = colors.find(c => c.id === dragId)
-    const dropColor: Color | undefined = colors.find(c => c.id === parseInt(e.currentTarget.id))
-
-    if (dragColor && dropColor) {
-      handleDroppedColor(dragColor, dropColor)
-    }
-  }
-
   return (
     <Layout>
       <Container>
         <div className='py-20'>
           <h1 className='text-3xl font-bold mb-12'>Colors</h1>
-          <div className='flex flex-wrap'>
-            {colors.length > 0 &&
-              colors.map(c => {
-                return (<ColorPicker 
-                  key={`color_${c.id}`}
-                  color={c} 
-                  handleDrag={handleDrag}
-                  handleDrop={handleDrop}
-                  />)
+          <div>
+            {palettes && palettes.length > 0 &&
+              palettes.sort((a, b) => {
+                if (a && b && a.created_at && b.created_at) {
+                  return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                }
+                return 0
               })
+                .map(p => {
+                  return (
+                    <ColorPalette key={p.id} palette={p} />
+                  )
+                })
             }
-            <NewColor />
+            <NewPalette />
           </div>
         </div>
       </Container>
@@ -72,16 +61,19 @@ export const getServerSideProps = async () => {
   const supabaseKey = process.env.SUPABASE_KEY ?? ''
   const supabase = createClient(supabaseUrl, supabaseKey)
 
-  let { data: Palette, error } = await supabase
-  .from('Palette')
-  .select('*')
+  let { data: Palettes } = await supabase
+    .from('Palettes')
+    .select('*')
+  let { data: Colors } = await supabase
+    .from('Colors')
+    .select('*')
 
   return {
     props: {
       data: {
-        colors: Palette
-      },
-      error
+        colors: Colors,
+        palettes: Palettes
+      }
     }
   }
 }
