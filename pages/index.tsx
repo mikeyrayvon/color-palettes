@@ -38,7 +38,7 @@ const Landing: NextPage<Props> = ({data, error}) => {
         newColor
       ]
     })
-    postData('api/upsertColor', { color: newColor })
+    postData('/api/upsertColor', { color: newColor })
   }
 
   const updateValues = (color: Color, hex: string) => {
@@ -55,19 +55,18 @@ const Landing: NextPage<Props> = ({data, error}) => {
   }
 
   const updateColor = async (color: Color) => {
-    const response = await postData('api/getName', {
+    const response = await postData('/api/getName', {
       hex: color.hex.slice(1)
     })
-    console.log(response)
-    if (response && response.hexCode) {
+    if (response?.colors) {
       const updatedColor = {
         ...color, 
-        name: response?.name ? response.name : 'New Color'
+        name: response.colors[0].name
       }
       setPalette(prevPalette => {
         return prevPalette.map(c => c.order === updatedColor.order ? updatedColor : c)
       })
-      postData('api/upsertColor', { color: updatedColor })
+      postData('/api/upsertColor', { color: updatedColor })
     } else {
       console.error(response)
     }
@@ -77,7 +76,7 @@ const Landing: NextPage<Props> = ({data, error}) => {
     const filtered = palette.filter(color => color.id !== id)
     const updated = assignPaletteNewOrder(filtered)
     setPalette(updated)
-    postData('api/deleteColor', { id })
+    postData('/api/deleteColor', { id })
   } 
 
   const reorderColor = (id: number, oldOrder: number, newOrder: number) => {
@@ -87,14 +86,14 @@ const Landing: NextPage<Props> = ({data, error}) => {
           ...c, 
           order: oldOrder
         }
-        postData('api/upsertColor', { color: updatedColor })
+        postData('/api/upsertColor', { color: updatedColor })
         return updatedColor
       } else if (c.id === id) {
         const updatedColor = {
           ...c, 
           order: newOrder
         }
-        postData('api/upsertColor', { color: updatedColor })
+        postData('/api/upsertColor', { color: updatedColor })
         return updatedColor
       }
       return c

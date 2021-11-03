@@ -1,15 +1,15 @@
 import { NextApiRequest, NextApiResponse } from 'next'
+import axios from 'axios' 
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { hex } = req.body
-    const response = await fetch('https://colornames.org/search/json/?hex=' + hex, {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    const data = await response.json()
-    res.status(200).json(data)
+    const response = await axios('https://api.color.pizza/v1/' + hex)
+    res.status(200).json(response.data)
   } catch (error) {
-    res.status(405).json(error)
+    console.log(error)
+    res.json(error)
   }
 }
+
+export default handler
