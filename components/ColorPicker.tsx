@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { Color } from '../utils/types'
 
 interface Props {
@@ -5,8 +6,8 @@ interface Props {
   updateValues(color: Color, hex: string): void
   updateColor(color: Color): void
   deleteColor(id: number): void
-  reorderColor(id: number, oldOrder: number, newOrder: number): void
-  paletteLength: number
+  handleDrag(e: React.DragEvent): void
+  handleDrop(e: React.DragEvent): void
 }
 
 const ColorPicker: React.FC<Props> = ({ 
@@ -14,16 +15,26 @@ const ColorPicker: React.FC<Props> = ({
   updateColor, 
   updateValues, 
   deleteColor, 
-  reorderColor, 
-  paletteLength 
+  handleDrag,
+  handleDrop
 }) => {
+  const [hovered, setHovered] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     updateValues(color, e.target.value)
   }
 
   return (
-    <div className='flex flex-col text-center items-center py-4 w-32 relative'>
+    <div 
+      className='flex flex-col text-center items-center py-4 w-32 relative h-[190px]'
+      id={color.id.toString()}
+      draggable={true}
+      onDragOver={(e) => e.preventDefault()}
+      onDragStart={handleDrag}
+      onDrop={handleDrop}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      >
       <input 
         className='w-0 h-0 opacity-0 absolute left-0' 
         type='color' 
@@ -40,25 +51,23 @@ const ColorPicker: React.FC<Props> = ({
         }} 
         htmlFor={`color_${color.id}`} 
         />
-      <div className='absolute top-0 right-0 flex'>
-        {color?.order > 1 &&
-          <button onClick={() => reorderColor(color.id, color.order, color.order - 1)}>&larr;</button>
-        }
-        {color?.order < paletteLength &&
-          <button onClick={() => reorderColor(color.id, color.order, color.order + 1)}>&rarr;</button>
-        }
-        <button onClick={() => deleteColor(color.id)}>X</button>
-      </div>
-      <div className='text-xs flex flex-col justify-end'>
+      {hovered &&
+        <div className='absolute top-0 right-0 flex'>
+          <button onClick={() => deleteColor(color.id)}>X</button>
+        </div>
+      }
+      <div className='text-xs flex flex-col justify-between flex-grow'>
         {color?.name && 
-          <span className='mb-2 font-bold text-gray-800'>{color.name}</span>
+          <div className='flex-grow flex flex-col justify-center'><span className='mb-2 font-bold text-gray-800'>{color.name}</span></div>
         }
-        {color?.hex && 
-          <span className='text-gray-500'>{color.hex}</span>
-        }
-        {color?.rgb && 
-          <span className='text-gray-500'>rgb({color.rgb})</span>
-        }
+        <div className='block'>
+          {color?.hex && 
+            <div><span className='text-gray-500'>{color.hex}</span></div>
+          }
+          {color?.rgb && 
+            <div><span className='text-gray-500'>rgb({color.rgb})</span></div>
+          }
+        </div>
       </div>
     </div>
   )

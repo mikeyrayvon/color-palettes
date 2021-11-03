@@ -8,7 +8,7 @@ import NewColor from '../components/NewColor'
 import { initialColor, supabaseUrl } from '../utils/constants'
 import { assignPaletteNewOrder, hexToRGB, sortPaletteByOrder, uniqueId } from '../utils/tools'
 import { postData } from '../utils/api'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const supabaseKey = process.env.SUPABASE_KEY ?? ''
 const supabase = createClient(supabaseUrl, supabaseKey)
@@ -19,7 +19,9 @@ interface Props {
 }
 
 const Landing: NextPage<Props> = ({data, error}) => {
+  const [dragId, setDragId] = useState<null | number>(null)
   const [palette, setPalette] = useState<Color[]>([])
+
   useEffect(() => {
     if (data && data.length > 0) {
       setPalette(sortPaletteByOrder(data))
@@ -79,29 +81,39 @@ const Landing: NextPage<Props> = ({data, error}) => {
     postData('/api/deleteColor', { id })
   } 
 
-  const reorderColor = (id: number, oldOrder: number, newOrder: number) => {
-    const reordered = palette.map((c): Color => {
-      if (c.order === newOrder && c.id !== id) {
-        const updatedColor = {
-          ...c, 
-          order: oldOrder
+  const handleDrag = (e: React.DragEvent) => {
+    setDragId(parseInt(e.currentTarget.id))
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    const dragColor: Color | undefined = palette.find(color => color.id === dragId)
+    const dropColor: Color | undefined = palette.find(color=> color.id === parseInt(e.currentTarget.id));
+
+    if (dragColor && dropColor) {
+      const reordered = palette.map((c): Color => {
+        if (c.id === dragId) {
+          const updatedColor = {
+            ...c, 
+            order: dropColor.order
+          }
+          postData('/api/upsertColor', { color: updatedColor })
+          return updatedColor
         }
-        postData('/api/upsertColor', { color: updatedColor })
-        return updatedColor
-      } else if (c.id === id) {
-        const updatedColor = {
-          ...c, 
-          order: newOrder
+        if (c.id === parseInt(e.currentTarget.id)) {
+          const updatedColor = {
+            ...c, 
+            order: dragColor.order
+          }
+          postData('/api/upsertColor', { color: updatedColor })
+          return updatedColor
         }
-        postData('/api/upsertColor', { color: updatedColor })
-        return updatedColor
-      }
-      return c
-    })
-    const sorted = sortPaletteByOrder(reordered)
-    const updated = assignPaletteNewOrder(sorted)
-    setPalette(updated)
-  }
+        return c
+      })
+      const sorted = sortPaletteByOrder(reordered)
+      const updated = assignPaletteNewOrder(sorted)
+      setPalette(updated)
+    }
+  };
 
   return (
     <Layout>
@@ -117,8 +129,8 @@ const Landing: NextPage<Props> = ({data, error}) => {
                   updateValues={updateValues} 
                   updateColor={updateColor}
                   deleteColor={deleteColor}
-                  reorderColor={reorderColor}
-                  paletteLength={palette.length}
+                  handleDrag={handleDrag}
+                  handleDrop={handleDrop}
                   />)
               })
             }
