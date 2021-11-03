@@ -2,7 +2,8 @@ import { NextApiRequest, NextApiResponse } from 'next'
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const response = await fetch('https://colornames.org/search/json/?hex=' + req.body.hex, {
+    const { hex } = req.body
+    const response = await fetch('https://colornames.org/search/json/?hex=' + hex, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
