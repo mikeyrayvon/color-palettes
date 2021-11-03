@@ -47,7 +47,8 @@ const ColorPicker: React.FC<Props> = ({
       <label 
         className='block w-24 h-24 rounded-full shadow-xl mb-4' 
         style={{
-          backgroundColor: color?.hex
+          backgroundColor: color?.hex,
+          cursor: 'move'
         }} 
         htmlFor={`color_${color.id}`} 
         />
