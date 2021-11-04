@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useAppContext } from '../utils/store'
 import type { Color } from '../utils/types'
 
@@ -26,6 +26,15 @@ const ColorPicker: React.FC<Props> = ({
     updateValues(color, e.target.value)
   }
 
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    updateColor(color)
+  }
+
+  const handleDelete = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault()
+    deleteColor(color, paletteId)
+  }
+
   return (
     <div 
       className='flex flex-col text-center items-center py-4 w-32 relative h-[190px] hover-parent'
@@ -42,7 +51,7 @@ const ColorPicker: React.FC<Props> = ({
         name={`color_${color.id}`}
         value={color?.hex} 
         onInput={handleChange} 
-        onBlur={() => updateColor(color)}
+        onBlur={handleBlur}
         />
       <label 
         className='block w-24 h-24 rounded-full shadow-xl mb-4' 
@@ -53,7 +62,7 @@ const ColorPicker: React.FC<Props> = ({
         htmlFor={`color_${color.id}`} 
         />
       <div className='hover-child absolute top-0 right-0 flex'>
-        <button className='text-gray-400 hover:text-black' onClick={() => deleteColor(color, paletteId)}>✕</button>
+        <button className='text-gray-400 hover:text-black' onClick={handleDelete}>✕</button>
       </div>
       <div className='text-xs flex flex-col justify-between flex-grow'>
         {color?.name && 
