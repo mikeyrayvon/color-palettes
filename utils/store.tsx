@@ -127,22 +127,33 @@ const AppContextProvider: React.FC = ({ children }) => {
     })
   }
 
-  const updateColor = async (color: Color) => {
-    const response = await postData('/api/getName', {
+  const updateColor = (color: Color) => {
+    let updatedColor = color
+    postData('/api/getName', {
       hex: color.hex.slice(1)
     })
-    if (response?.colors) {
-      const updatedColor = {
-        ...color, 
-        name: response.colors[0].name
-      }
-      setColors(prevColors => {
-        return prevColors.map(c => c.id === color.id ? updatedColor : c)
+      .then((response) => {
+        if (response?.colors) {
+          updatedColor = {
+            ...color, 
+            name: response.colors[0].name
+          }
+          setColors(prevColors => {
+            return prevColors.map(c => c.id === color.id ? updatedColor : c)
+          })
+          return updatedColor
+        } else {
+          throw new Error
+        }
       })
-      postData('/api/upsertColor', { color: updatedColor })
-    } else {
-      console.error(response)
-    }
+      .then(updatedColor => {
+        return postData('/api/upsertColor', { color: updatedColor })
+      })
+      .catch(err => {
+        console.error(err)
+        return err
+      })
+    
   }
 
   const deleteColor = (deletedColor: Color, paletteId: number) => {
