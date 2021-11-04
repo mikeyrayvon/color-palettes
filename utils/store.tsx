@@ -22,7 +22,7 @@ interface AppContextValue {
   addPalette(): void
   updateValues(color: Color, hex: string): void
   updateColor(color: Color): void
-  deleteColor(colorId: number, paletteId: number): void
+  deleteColor(deletedColor: Color, paletteId: number): void
   handleDroppedColor(dragColor: Color, dropColor: Color): void | null
   updateTitle(e: React.ChangeEvent<HTMLInputElement>, paletteId: number): void
   updatePalette(palette: Palette): void
@@ -67,6 +67,7 @@ const AppContextProvider: React.FC = ({ children }) => {
       id: colorId,
       order: palette?.colors ? palette?.colors.length + 1 : 1
     }
+    
     const updatedPalettes = palettes.map(p => {
       if (p.id === paletteId) {
         return {
@@ -144,10 +145,9 @@ const AppContextProvider: React.FC = ({ children }) => {
     }
   }
 
-  const deleteColor = (colorId: number, paletteId: number) => {
-    const updatedColors = colors.filter(c => c.id !== colorId)
+  const deleteColor = (deletedColor: Color, paletteId: number) => {
     const palette = palettes.find(p => p.id === paletteId)
-    const filteredColors = palette?.colors.filter(id => id !== colorId)
+    const filteredColors = palette?.colors.filter(id => id !== deletedColor.id)
     const updatedPalettes = palettes.map(p => {
       if (p.id === paletteId && filteredColors) {
         return {
@@ -157,9 +157,27 @@ const AppContextProvider: React.FC = ({ children }) => {
       }
       return p
     })
+    const updatedColors = colors.filter(c => c.id !== deletedColor.id)
+      .map(c => {
+        if (c.order > deletedColor.order) {
+          const updatedColor = {
+            ...c,
+            order: c.order - 1
+          } 
+          postData('/api/upsertColor', { color: updatedColor })
+          return updatedColor
+        }
+        return c
+      })
     setColors(updatedColors)
     setPalettes(updatedPalettes)
-    postData('/api/deleteColor', { id: colorId })
+    
+    postData('/api/deleteColor', { id: deletedColor.id })
+    if (palette?.colors) {
+      for (const c in palette.colors) {
+
+      }
+    }
     postData('/api/upsertPalette', { palette: {
       ...palette,
       colors: filteredColors
@@ -187,9 +205,7 @@ const AppContextProvider: React.FC = ({ children }) => {
         }
         return c
       })
-      const sorted = sortPaletteByOrder(reordered)
-      const updated = assignPaletteNewOrder(sorted)
-      setColors(updated)
+      setColors(reordered)
     }
   }
 
