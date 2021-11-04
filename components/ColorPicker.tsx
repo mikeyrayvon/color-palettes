@@ -28,14 +28,12 @@ const ColorPicker: React.FC<Props> = ({
 
   return (
     <div 
-      className='flex flex-col text-center items-center py-4 w-32 relative h-[190px]'
+      className='flex flex-col text-center items-center py-4 w-32 relative h-[190px] hover-parent'
       id={color.id.toString()}
       draggable={true}
       onDragOver={(e) => e.preventDefault()}
       onDragStart={handleDrag}
       onDrop={handleDrop}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       >
       <input 
         className='w-0 h-0 opacity-0 absolute left-0' 
@@ -54,11 +52,9 @@ const ColorPicker: React.FC<Props> = ({
         }} 
         htmlFor={`color_${color.id}`} 
         />
-      {hovered &&
-        <div className='absolute top-0 right-0 flex'>
-          <button onClick={() => deleteColor(color.id, paletteId)}>✕</button>
-        </div>
-      }
+      <div className='hover-child absolute top-0 right-0 flex'>
+        <button onClick={() => deleteColor(color, paletteId)}>✕</button>
+      </div>
       <div className='text-xs flex flex-col justify-between flex-grow'>
         {color?.name && 
           <div className='flex-grow flex flex-col justify-center'><span className='mb-2 font-bold text-gray-800'>{color.name}</span></div>

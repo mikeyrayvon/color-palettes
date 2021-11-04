@@ -9,8 +9,6 @@ interface Props {
 }
 
 const ColorPalette: React.FC<Props> = ({ palette }) => {
-  const [hovered, setHovered] = useState(false)
-
   const { 
     colors, 
     handleDroppedColor,
@@ -63,9 +61,7 @@ const ColorPalette: React.FC<Props> = ({ palette }) => {
   
   return (
     <div 
-      className='mb-8'
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      className='mb-8 group'
       >
       <div className='flex justify-between items-center'>
         <input 
@@ -75,12 +71,10 @@ const ColorPalette: React.FC<Props> = ({ palette }) => {
           onChange={e => updateTitle(e, palette.id)}
           onBlur={() => updatePalette(palette)}
           />
-        {hovered && 
           <button 
-            className='py-1 px-2 rounded-lg bg-gray-500 hover:bg-gray-600 text-white' 
+            className='opacity-0 group-hover:opacity-100 py-1 px-2 rounded-lg bg-gray-500 hover:bg-gray-600 text-white' 
             onClick={() => deletePalette(palette.id, palette.colors)}
             >Remove</button>
-        }
       </div>
       <div className='flex flex-wrap'>
         <p>{palette.description}</p>
