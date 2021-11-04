@@ -4,7 +4,17 @@ import { initialColor, initialPalette } from './constants'
 import { assignPaletteNewOrder, hexToRGB, sortPaletteByOrder, uniqueId } from './tools'
 import { Color, Palette } from './types'
 
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl: string = (process.env.NEXT_PUBLIC_SUPABASE_URL as string) || ''
+const supabaseKey: string = (process.env.NEXT_PUBLIC_SUPABASE_KEY as string) || ''
+export const supabase = createClient(
+  supabaseUrl,
+  supabaseKey
+)
+
 interface AppContextValue {
+  supabase: any
   palettes: Palette[] | []
   colors: Color[] | []
   setInitialData(data: {}): void
@@ -20,6 +30,7 @@ interface AppContextValue {
 }
 
 const AppContext = createContext<AppContextValue>({
+  supabase,
   palettes: [],
   colors: [],
   setInitialData: () => {},
@@ -214,6 +225,7 @@ const AppContextProvider: React.FC = ({ children }) => {
   return (
     <AppContext.Provider
       value={{
+        supabase,
         palettes,
         colors,
         setInitialData,

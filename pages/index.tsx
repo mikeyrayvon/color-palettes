@@ -1,5 +1,4 @@
 import type { NextPage } from 'next'
-import { createClient } from '@supabase/supabase-js'
 import Layout from '../components/Layout'
 import Container from '../components/Container'
 import { Color, Palette } from '../utils/types'
@@ -9,7 +8,7 @@ import { initialColor } from '../utils/constants'
 import { assignPaletteNewOrder, hexToRGB, sortPaletteByOrder, uniqueId } from '../utils/tools'
 import { postData } from '../utils/api'
 import React, { useEffect, useState } from 'react'
-import { useAppContext } from '../utils/store'
+import { supabase, useAppContext } from '../utils/store'
 import ColorPalette from '../components/ColorPalette'
 import NewPalette from '../components/NewPalette'
 
@@ -17,6 +16,7 @@ interface Props {
   data: {}
   error: {}
 }
+
 const Landing: NextPage<Props> = ({ data, error }) => {
   const { 
     palettes, 
@@ -33,7 +33,7 @@ const Landing: NextPage<Props> = ({ data, error }) => {
     <Layout>
       <Container>
         <div className='py-20'>
-          <h1 className='text-3xl font-bold mb-12'>Colors</h1>
+          <h1 className='text-3xl font-bold mb-12'>Color Palettes</h1>
           <div>
             {palettes && palettes.length > 0 &&
               palettes.sort((a: Palette, b: Palette) => {
@@ -57,10 +57,6 @@ const Landing: NextPage<Props> = ({ data, error }) => {
 }
 
 export const getServerSideProps = async () => {
-  const supabaseUrl = process.env.SUPABASE_URL ?? ''
-  const supabaseKey = process.env.SUPABASE_KEY ?? ''
-  const supabase = createClient(supabaseUrl, supabaseKey)
-
   let { data: Palettes } = await supabase
     .from('Palettes')
     .select('*')
