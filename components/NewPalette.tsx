@@ -7,7 +7,7 @@ const NewPalette: React.FC = () => {
 
   return (
     <div className='pt-8'>
-      <button className='py-1 px-2 rounded-lg bg-gray-500 hover:bg-gray-600 text-white' onClick={addPalette}>Add Palette</button>
+      <button className='py-1 px-2 rounded-lg bg-gray-400 hover:bg-gray-600 text-white' onClick={addPalette}>Add Palette</button>
     </div>
   )
 }

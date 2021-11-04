@@ -53,7 +53,7 @@ const ColorPicker: React.FC<Props> = ({
         htmlFor={`color_${color.id}`} 
         />
       <div className='hover-child absolute top-0 right-0 flex'>
-        <button onClick={() => deleteColor(color, paletteId)}>✕</button>
+        <button className='text-gray-400 hover:text-black' onClick={() => deleteColor(color, paletteId)}>✕</button>
       </div>
       <div className='text-xs flex flex-col justify-between flex-grow'>
         {color?.name && 

@@ -65,14 +65,14 @@ const ColorPalette: React.FC<Props> = ({ palette }) => {
       >
       <div className='flex justify-between items-center'>
         <input 
-          className='border-0 text-xl font-bold' 
+          className='border-0 border-b border-transparent text-xl font-bold px-0 focus:ring-transparent hover:border-gray-200 focus:border-black' 
           value={palette.title} 
           type='text' 
           onChange={e => updateTitle(e, palette.id)}
           onBlur={() => updatePalette(palette)}
           />
           <button 
-            className='opacity-0 group-hover:opacity-100 py-1 px-2 rounded-lg bg-gray-500 hover:bg-gray-600 text-white' 
+            className='opacity-0 group-hover:opacity-100 py-1 px-2 rounded-lg bg-gray-400 hover:bg-gray-600 text-white' 
             onClick={() => deletePalette(palette.id, palette.colors)}
             >Remove</button>
       </div>
